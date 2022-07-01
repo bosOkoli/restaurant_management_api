@@ -109,7 +109,7 @@ func UpdateTable() gin.HandlerFunc {
 		if table.Table_number != nil {
 			updateObj = append(updateObj, bson.E{"table_number", table.Table_number})
 		}
-		table.Created_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+
 		table.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 
 		upsert := true
