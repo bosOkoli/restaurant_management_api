@@ -194,7 +194,7 @@ func VerifyPassword(userPassword string, providedPassword string) (bool, string)
 	msg := ""
 
 	if err != nil {
-		msg = fmt.Sprintf("Login password or password is incorrect")
+		msg = fmt.Sprintf("Login password is incorrect")
 		check = false
 	}
 	return check, msg
