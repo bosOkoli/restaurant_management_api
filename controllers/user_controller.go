@@ -79,6 +79,7 @@ func GetUser() gin.HandlerFunc {
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occured while listing user"})
+			return
 		}
 		c.JSON(http.StatusOK, user)
 	}
@@ -103,10 +104,16 @@ func SignUp() gin.HandlerFunc {
 		}
 		count, err := userCollection.CountDocuments(ctx, bson.M{"email": user.Email})
 
+		if count > 0 {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "This email has been used"})
+			return
+		}
+
 		defer cancel()
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occured while checking email"})
+
 			return
 		}
 		password := HashPassword(*user.Password)
@@ -118,10 +125,12 @@ func SignUp() gin.HandlerFunc {
 		if err != nil {
 			log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error occured while checking phone"})
+			return
 		}
 
 		if count > 0 {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "This email or phone nu"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "This phone number has been used"})
+			return
 		}
 
 		user.Created_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
