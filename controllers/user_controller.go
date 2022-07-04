@@ -41,6 +41,7 @@ func GetUsers() gin.HandlerFunc {
 		startIndex, _ = strconv.Atoi(c.Query("startIndex"))
 
 		matchStage := bson.D{{"$match", bson.D{{}}}}
+		groupStage := bson.D{{"$group", bson.D{{"_id", bson.D{{"_id", "null"}}}, {"total_count", bson.D{{"$sum", 1}}}, {"data", bson.D{{"$push", "$$ROOT"}}}}}}
 
 		projectStage := bson.D{{"$project", bson.D{
 			{"_id", 0},
@@ -49,7 +50,7 @@ func GetUsers() gin.HandlerFunc {
 		}}}
 
 		result, err := userCollection.Aggregate(ctx, mongo.Pipeline{
-			matchStage, projectStage})
+			matchStage, groupStage, projectStage})
 
 		defer cancel()
 		if err != nil {
